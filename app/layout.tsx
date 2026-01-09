@@ -37,7 +37,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* HEADER */}
         <div className="min-h-screen w-full flex flex-col gap-4 py-1 px-1 lg:flex-row">
-          <header className="p-4 rounded-xl bg-white shadow-sm w-full lg:w-64">
+          <header className="hidden p-4 rounded-xl bg-white shadow-sm w-full lg:block md:w-64">
 
             <Link href="/" className="font-bold tracking-[0.25em] text-2xl uppercase py-2 px-4 mb-4 inline-block">
                 La CLEF
@@ -58,7 +58,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
 
           </header>
 
-          <main className="flex flex-col bg-white rounded-xl p-4 w-full min-h-screen shadow-sm min-w-0 gap-4">
+          <main className="flex flex-col bg-white rounded-xl p-4 w-full min-h-screen shadow-sm min-w-0 gap-2">
             <header className="flex w-full border px-4 py-3 rounded-xl bg-white shadow-sm">
             Something to write here !
             </header>
