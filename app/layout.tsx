@@ -36,34 +36,38 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* HEADER */}
-        <div className="min-h-screen w-full flex flex-col gap-4 px-4 lg:flex-row">
-        <header className="p-4 rounded-xl bg-white shadow-sm w-full lg:w-64 flex-shrink-0">
-          <nav className="flex flex-col gap-4">
-            <Link href="/" className="font-bold tracking-[0.25em] text-2xl uppercase py-2 px-4 mb-2">
-              La CLEF
+        <div className="min-h-screen w-full flex flex-col gap-4 py-1 px-1 lg:flex-row">
+          <header className="p-4 rounded-xl bg-white shadow-sm w-full lg:w-64">
+
+            <Link href="/" className="font-bold tracking-[0.25em] text-2xl uppercase py-2 px-4 mb-4 inline-block">
+                La CLEF
             </Link>
 
-          {links.map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`${navLinkClass} inline-flex items-center gap-2`}
-            >
-              <link.Icon className="h-4 w-4" aria-hidden="true" />
-              {link.label}
-            </Link>
-          ))}
+            <nav className="flex flex-col gap-4">
+            {links.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`${navLinkClass} inline-flex items-center gap-2`}
+              >
+                <link.Icon className="h-4 w-4" aria-hidden="true" />
+                {link.label}
+              </Link>
+            ))}
+            </nav>
+
+          </header>
+
+          <main className="flex flex-col bg-white rounded-xl p-4 w-full min-h-screen shadow-sm min-w-0 gap-4">
+            <header className="flex w-full border px-4 py-3 rounded-xl bg-white shadow-sm">
+            Something to write here !
+            </header>
+            {children}
+          </main>
+
+          <nav className="p-4 py-6 rounded-xl bg-white font-bold tracking-[0.25em] text-xl uppercase shadow-sm w-full lg:w-64 text-center">
+            A la une
           </nav>
-
-        </header>
-
-        <main className="flex-1 bg-white rounded-xl p-4 w-full min-h-screen shadow-sm min-w-0">
-          {children}
-        </main>
-
-        <nav className="p-4 rounded-xl bg-white text-xl font-bold min-h-screen sm:hidden lg:block shadow-sm w-full lg:w-64 flex-shrink-0">
-          Actualités à la une !
-        </nav>
         </div>
       </body>
     </html>
