@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { getPostsForDay } from "@/lib/getPostsForDay";
 import type { Post } from "@/lib/types";
@@ -43,8 +43,13 @@ export default function CalendarView({ posts = [], setPosts }: CalendarViewProps
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [expandedDay, setExpandedDay] = useState<Date | null>(null);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [mounted, setMounted] = useState(false);
   const today = startOfDay(new Date());
   const calendarPosts = posts ?? [];
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // 1) Calcul de la période (start/end) en fonction du mode + cursor
   const { periodStart, periodEnd } = useMemo(() => {
@@ -150,6 +155,10 @@ export default function CalendarView({ posts = [], setPosts }: CalendarViewProps
         ? "bg-blue-100 text-blue-800 border-blue-200"
         : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:scale-95"
     }`;
+  }
+
+  if (!mounted) {
+    return <section className="w-full" suppressHydrationWarning />;
   }
 
   return (

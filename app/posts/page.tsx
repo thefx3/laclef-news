@@ -34,17 +34,17 @@ export default function PostsPage() {
 
     if (filterMode === "sinceYesterday") {
       const from = startOfDay(addDays(today, -1));
-      return base.filter((p) => startOfDay(p.startAt) >= from);
+      return base.filter((p) => startOfDay(p.createdAt) >= from);
     }
 
     if (filterMode === "sinceWeek") {
       const from = startOfDay(addDays(today, -7));
-      return base.filter((p) => startOfDay(p.startAt) >= from);
+      return base.filter((p) => startOfDay(p.createdAt) >= from);
     }
 
     if (filterMode === "onDate" && filterDate) {
       const target = startOfDay(new Date(filterDate));
-      return base.filter((p) => isSameDay(p.startAt, target));
+      return base.filter((p) => isSameDay(p.createdAt, target));
     }
 
     return base;
