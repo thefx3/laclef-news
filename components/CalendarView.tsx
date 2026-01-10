@@ -1,10 +1,25 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
 
-import type { Post } from "@/lib/types";
 import { getPostsForDay } from "@/lib/getPostsForDay";
+import type { Post } from "@/lib/types";
+import {
+  addDays,
+  addMonths,
+  endOfMonth,
+  formatDayLabelFR,
+  formatShortFR,
+  isSameDay,
+  sortByCreatedDesc,
+  startOfDay,
+  startOfMonth,
+  startOfWeekMonday,
+} from "@/lib/calendarUtils";
+import { PostModal } from "./calendar/PostModal";
+import { DayModal } from "./calendar/DayModal";
+import { PostGrid } from "./calendar/PostGrid";
+import { PostList } from "./calendar/PostList";
 
 type CalendarViewProps = {
   posts?: Post[];
@@ -20,84 +35,13 @@ const MODES = [
 ] as const;
 
 
-/** Met une date à 00:00:00 pour éviter les bugs d'heures */
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-/** Ajoute N jours (sans modifier la date d'origine) */
-function addDays(d: Date, days: number) {
-  const result = new Date(d);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-/** Lundi = début de semaine (FR) */
-function startOfWeekMonday(d: Date) {
-  const x = startOfDay(d);
-  const dayIndex = (x.getDay() + 6) % 7; // dim(0)->6, lun(1)->0, mar(2)->1...
-  return addDays(x, -dayIndex);
-}
-
-function startOfMonth(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-
-function endOfMonth(d: Date) {
-  // jour 0 du mois suivant = dernier jour du mois courant
-  return new Date(d.getFullYear(), d.getMonth() + 1, 0);
-}
-
-/** Ajoute N mois (utile pour les flèches en mode "month") */
-function addMonths(d: Date, months: number) {
-  const x = new Date(d);
-  x.setMonth(x.getMonth() + months);
-  return x;
-}
-
-/** Format date: 18/01 */
-function formatShortFR(d: Date) {
-  return d.toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
-
-/** Format jour: lun. 18 janv. */
-function formatDayLabelFR(d: Date) {
-  return d.toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "2-digit",
-    month: "short",
-  });
-}
-
-function isSameDay(a: Date, b: Date) {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
-function sortByCreatedDesc(list: Post[]) {
-  return [...list].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-
 export default function CalendarView({ posts = [] }: CalendarViewProps) {
   const [mode, setMode] = useState<Mode>("day");
   const [cursor, setCursor] = useState<Date>(() => startOfDay(new Date()));
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [expandedDay, setExpandedDay] = useState<Date | null>(null);
   const today = startOfDay(new Date());
-  const calendarPosts = useMemo(
-    () => posts.filter((p) => p.type !== "A_LA_UNE"),
-    [posts]
-  );
+  const calendarPosts = posts ?? [];
 
   // 1) Calcul de la période (start/end) en fonction du mode + cursor
   const { periodStart, periodEnd } = useMemo(() => {
@@ -156,14 +100,14 @@ export default function CalendarView({ posts = [] }: CalendarViewProps) {
   }
 
   // 5) Grille responsive
-const gridCols =
-  mode === "day"
-    ? "grid-cols-1"
-    : mode === "3days"
-    ? "grid-cols-1 sm:grid-cols-3"
-    : mode === "week"
-    ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
-    : "grid-cols-2 sm:grid-cols-4 lg:grid-cols-6";
+  const gridCols =
+    mode === "day"
+      ? "grid-cols-1"
+      : mode === "3days"
+      ? "grid-cols-1 sm:grid-cols-3"
+      : mode === "week"
+      ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
+      : "grid-cols-2 sm:grid-cols-4 lg:grid-cols-6";
 
   function formatLabelByMode(day: Date) {
     if (mode === "day") {
@@ -277,49 +221,14 @@ const gridCols =
                 ) : (
                   <>
                     {isDayMode ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                        {postsToShow.map((post) => (
-                          <div
-                            key={post.id}
-                            className="rounded border bg-gray-50 px-2 py-2 h-full cursor-pointer hover:bg-gray-100"
-                            onClick={() => setSelectedPost(post)}
-                          >
-                            <div className="text-xs font-semibold text-gray-500">
-                              {post.type}
-                            </div>
-                            <div className="font-medium">
-                              {post.title}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <PostGrid posts={postsToShow} onSelectPost={setSelectedPost} />
                     ) : (
-                      <ul className="space-y-2">
-                    {postsToShow.map((post) => (
-                      <li
-                        key={post.id}
-                        className="rounded border bg-gray-50 px-2 py-1"
-                        onClick={() => setSelectedPost(post)}
-                        role="button"
-                      >
-                        <div className="text-xs font-semibold text-gray-500">
-                          {post.type}
-                        </div>
-                        <div className="font-medium">
-                              {post.title}
-                            </div>
-                          </li>
-                        ))}
-
-                        {remaining > 0 && (
-                          <li
-                            className="text-xs text-gray-500 cursor-pointer underline"
-                            onClick={() => setExpandedDay(day)}
-                          >
-                            +{remaining} autres
-                          </li>
-                        )}
-                      </ul>
+                      <PostList
+                        posts={postsToShow}
+                        remaining={remaining}
+                        onSelectPost={setSelectedPost}
+                        onShowMore={() => setExpandedDay(day)}
+                      />
                     )}
                   </>
                 )}
@@ -331,102 +240,19 @@ const gridCols =
 
       {/* Modal liste des posts pour un jour */}
       {expandedDay && (
-        <Modal onClose={() => setExpandedDay(null)}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-gray-900">
-              Évènements du {formatLabelByMode(expandedDay)}
-            </div>
-          </div>
-          <div className="space-y-2">
-            {sortByCreatedDesc(getPostsForDay(calendarPosts, expandedDay)).map((post) => (
-              <div
-                key={post.id}
-                className="rounded border bg-gray-50 px-3 py-2 cursor-pointer hover:bg-gray-100"
-                onClick={() => {
-                  setSelectedPost(post);
-                  setExpandedDay(null);
-                }}
-              >
-                <div className="text-xs font-semibold text-gray-500">
-                  {post.type}
-                </div>
-                <div className="font-medium text-gray-900">{post.title}</div>
-              </div>
-            ))}
-          </div>
-        </Modal>
+        <DayModal
+          label={formatLabelByMode(expandedDay)}
+          posts={sortByCreatedDesc(getPostsForDay(calendarPosts, expandedDay))}
+          onSelectPost={setSelectedPost}
+          onClose={() => setExpandedDay(null)}
+        />
       )}
 
       {/* Modal détail d’un post */}
       {selectedPost && (
-        <Modal onClose={() => setSelectedPost(null)}>
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <div className="text-xs font-semibold text-gray-500">
-                {selectedPost.type}
-              </div>
-              <div className="text-lg font-semibold text-gray-900">
-                {selectedPost.title}
-              </div>
-            </div>
-          </div>
-          <dl className="space-y-2 text-sm text-gray-700">
-            <div className="flex gap-2">
-              <dt className="w-28 text-gray-500">Posté par</dt>
-              <dd className="font-medium">{selectedPost.authorName}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="w-28 text-gray-500">Type</dt>
-              <dd className="font-medium">{selectedPost.type}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="w-28 text-gray-500">Début</dt>
-              <dd>{formatShortFR(selectedPost.startAt)}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="w-28 text-gray-500">Fin</dt>
-              <dd>
-                {selectedPost.endAt
-                  ? formatShortFR(selectedPost.endAt)
-                  : "Même jour"}
-              </dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="w-28 text-gray-500">Créé le</dt>
-              <dd>{formatShortFR(selectedPost.createdAt)}</dd>
-            </div>
-          </dl>
-        </Modal>
+        <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
 
     </section>
-  );
-}
-
-type ModalProps = {
-  children: ReactNode;
-  onClose: () => void;
-};
-
-function Modal({ children, onClose }: ModalProps) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-lg rounded-xl bg-white p-4 shadow-lg"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-        <button
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-          onClick={onClose}
-          aria-label="Fermer la fenêtre"
-        >
-          ✕
-        </button>
-      </div>
-    </div>
   );
 }
