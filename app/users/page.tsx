@@ -39,13 +39,12 @@ export default function UsersPage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <header>
-        <h1 className="text-xl font-bold text-gray-900">Utilisateurs</h1>
-        <p className="text-sm text-gray-600">
-          Liste des profils enregistrés.
-        </p>
-      </header>
+    <div className="flex flex-1 flex-col gap-4 w-full mx-auto font-sans p-2">
+      <main className="flex w-full flex-col justify-between py-2 items-start">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
+          Utilisateurs
+        </h1>
+      </main>
 
       {loading && <p className="text-sm text-gray-500">Chargement...</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

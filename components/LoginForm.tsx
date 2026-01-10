@@ -48,14 +48,14 @@ export function LoginForm({ onSuccess, onGuest }: Props) {
         type="password"
       />
       <div className="flex gap-2">
-        <button className="border px-3 py-2 rounded" onClick={signIn}>
+        <button className="border px-3 py-2 rounded cursor-pointer" onClick={signIn}>
           Connexion
         </button>
-        <button className="border px-3 py-2 rounded" onClick={signUp}>
+        <button className="border px-3 py-2 rounded cursor-pointer" onClick={signUp}>
           Créer compte
         </button>
         {onGuest && (
-          <button className="border px-3 py-2 rounded" onClick={onGuest}>
+          <button className="border px-3 py-2 rounded cursor-pointer" onClick={onGuest}>
             Invité
           </button>
         )}

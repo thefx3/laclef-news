@@ -1,13 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import { LoginForm } from "./LoginForm";
-import { usePathname } from "next/navigation";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 type AuthContextValue = {
@@ -32,15 +31,15 @@ export function AuthGate({ children }: Props) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     let active = true;
-    const guest = typeof window !== "undefined" && window.localStorage.getItem(GUEST_KEY) === "1";
-    setIsGuest(guest);
-
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
+      const guest =
+        typeof window !== "undefined" &&
+        window.localStorage.getItem(GUEST_KEY) === "1";
+      if (guest) setIsGuest(true);
       setSession(data.session ?? null);
       setLoading(false);
     });
@@ -82,25 +81,7 @@ export function AuthGate({ children }: Props) {
   if (!session && !isGuest) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
-        <LoginForm
-          onGuest={() => {
-            setGuest(true);
-            if (pathname !== "/") window.location.href = "/";
-          }}
-        />
-      </div>
-    );
-  }
-
-  if (isGuest && pathname !== "/") {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <LoginForm
-          onGuest={() => {
-            setGuest(true);
-            if (pathname !== "/") window.location.href = "/";
-          }}
-        />
+        <LoginForm onGuest={() => setGuest(true)} />
       </div>
     );
   }

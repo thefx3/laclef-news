@@ -16,7 +16,7 @@ export function AuthStatus() {
       <div className="flex items-center gap-3 text-xs text-gray-600">
         <span>Mode invité</span>
         <button
-          className="font-semibold text-red-600 hover:text-red-700 underline"
+          className="font-semibold text-red-600 hover:text-red-700 underline cursor-pointer"
           onClick={() => setGuest(false)}
         >
           Quitter
@@ -27,7 +27,7 @@ export function AuthStatus() {
 
   if (!session) {
     return (
-      <Link className="text-xs font-semibold text-blue-700 underline" href="/login">
+      <Link className="text-xs font-semibold text-blue-700 underline cursor-pointer" href="/login">
         Se connecter
       </Link>
     );
@@ -37,7 +37,7 @@ export function AuthStatus() {
     <div className="flex items-center gap-3 text-xs text-gray-600">
       <span>Connecté : {session.user.email}</span>
       <button
-        className="font-semibold text-red-600 hover:text-red-700 underline"
+        className="font-semibold text-red-600 hover:text-red-700 underline cursor-pointer"
         onClick={handleSignOut}
       >
         Déconnexion
