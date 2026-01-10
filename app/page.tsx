@@ -1,7 +1,11 @@
-"use client";
+ "use client";
 
-import CalendarView from "@/components/CalendarView";
+import dynamic from "next/dynamic";
 import { usePostStore } from "@/lib/postStore";
+
+const CalendarView = dynamic(() => import("@/components/CalendarView"), {
+  ssr: false,
+});
 
 export default function Home() {
   const { posts, setPosts } = usePostStore();

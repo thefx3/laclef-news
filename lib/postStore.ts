@@ -7,14 +7,16 @@ const STORAGE_KEY = "laclef-posts-v1";
 const subscribers = new Set<(posts: Post[]) => void>();
 let cache: Post[] | null = null;
 
-function revive(posts: any[]): Post[] {
-  return posts.map((p) => ({
-    ...p,
-    startAt: new Date(p.startAt),
-    endAt: p.endAt ? new Date(p.endAt) : undefined,
-    createdAt: new Date(p.createdAt),
-    lastEditedAt: p.lastEditedAt ? new Date(p.lastEditedAt) : undefined,
-  }));
+function revive(posts: unknown[]): Post[] {
+  return posts
+    .filter((post): post is Record<string, unknown> => typeof post === "object" && post !== null)
+    .map((p) => ({
+      ...(p as Post),
+      startAt: new Date((p as Post).startAt),
+      endAt: (p as Post).endAt ? new Date((p as Post).endAt!) : undefined,
+      createdAt: new Date((p as Post).createdAt),
+      lastEditedAt: (p as Post).lastEditedAt ? new Date((p as Post).lastEditedAt!) : undefined,
+    }));
 }
 
 function loadInitial(): Post[] {
@@ -25,7 +27,7 @@ function loadInitial(): Post[] {
       try {
         cache = revive(JSON.parse(raw));
         return cache;
-      } catch (_e) {
+      } catch {
         // ignore parse errors and fall back to mocks
       }
     }

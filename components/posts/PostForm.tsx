@@ -58,7 +58,7 @@ export function PostForm({ onAdd, posts }: Props) {
 
       <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-800" htmlFor="type">
-            Type d'évènement
+            Type d&apos;évènement
           </label>
           <select
             id="type"
@@ -80,7 +80,7 @@ export function PostForm({ onAdd, posts }: Props) {
               onChange={(e) => setIsFeatured(e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-200"
             />
-            Mettre l'évènement à la une
+            Mettre l&apos;évènement à la une
           </label>
         </div>
 
@@ -99,9 +99,9 @@ export function PostForm({ onAdd, posts }: Props) {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-800" htmlFor="end-date">
-              Date de fin (optionnel)
-            </label>
+          <label className="text-sm font-medium text-gray-800" htmlFor="end-date">
+            Date de fin (optionnel)
+          </label>
             <input
               id="end-date"
               type="date"
@@ -128,13 +128,26 @@ export function PostForm({ onAdd, posts }: Props) {
           />
         </div>
 
+        {/* <div className="md:col-span-2 flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-800" htmlFor="author">
+            Auteur
+          </label>
+          <input
+            id="author"
+            type="text"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          />
+        </div> */}
+
         <div className="md:col-span-2 flex justify-end">
           <button
             type="submit"
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm transition-colors cursor-pointer"
           >
             <Calendar className="h-4 w-4" aria-hidden />
-            Publier l'évènement
+            Publier l&apos;évènement
           </button>
         </div>
       </form>

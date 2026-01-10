@@ -93,8 +93,8 @@ export default function PostsPage() {
       )}
       {editing && (
         <PostEditModal
+          key={editing.id}
           post={editing}
-          allPosts={posts}
           onSave={(updated) => {
             setPosts((prev) =>
               sortByCreatedDesc(prev.map((p) => (p.id === updated.id ? updated : p)))

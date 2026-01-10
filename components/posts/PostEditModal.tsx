@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Calendar } from "lucide-react";
 import type { Post, PostType } from "@/lib/types";
 import { TYPE_OPTIONS } from "./types";
@@ -14,26 +14,21 @@ type Props = {
 };
 
 export function PostEditModal({ post, onSave, onDelete }: Props) {
-
+  const [title, setTitle] = useState(post.title);
   const [description, setDescription] = useState(post.description ?? "");
-  const [type, setType] = useState<PostType>(post.type === "A_LA_UNE" ? "EVENT" : post.type);
+  const [type, setType] = useState<PostType>(
+    post.type === "A_LA_UNE" ? "EVENT" : post.type
+  );
   const [isFeatured, setIsFeatured] = useState(post.type === "A_LA_UNE");
   const [startDate, setStartDate] = useState(() => toInputDate(post.startAt));
-  const [endDate, setEndDate] = useState(() => (post.endAt ? toInputDate(post.endAt) : ""));
+  const [endDate, setEndDate] = useState(() =>
+    post.endAt ? toInputDate(post.endAt) : ""
+  );
   const [author, setAuthor] = useState(post.authorName);
-
-  useEffect(() => {
-    setDescription(post.description ?? "");
-    setType(post.type === "A_LA_UNE" ? "EVENT" : post.type);
-    setIsFeatured(post.type === "A_LA_UNE");
-    setStartDate(toInputDate(post.startAt));
-    setEndDate(post.endAt ? toInputDate(post.endAt) : "");
-    setAuthor(post.authorName);
-  }, [post]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!startDate) return;
+    if (!title.trim() || !startDate) return;
 
     const startAt = startOfDay(new Date(startDate));
     const endAt = endDate ? startOfDay(new Date(endDate)) : undefined;
@@ -41,6 +36,7 @@ export function PostEditModal({ post, onSave, onDelete }: Props) {
 
     const updated: Post = {
       ...post,
+      title: title.trim(),
       description: description.trim() || undefined,
       type: finalType,
       startAt,
@@ -55,6 +51,32 @@ export function PostEditModal({ post, onSave, onDelete }: Props) {
   return (
     <Modal onClose={() => onSave(post)}>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-800" htmlFor="edit-title">
+            Titre
+          </label>
+          <input
+            id="edit-title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            required
+          />
+        </div>
+
+        {/* <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-800" htmlFor="edit-author">
+            Auteur
+          </label>
+          <input
+            id="edit-author"
+            type="text"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          />
+        </div> */}
 
         <div className="md:col-span-2 flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-800" htmlFor="edit-description">
@@ -71,7 +93,7 @@ export function PostEditModal({ post, onSave, onDelete }: Props) {
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-800" htmlFor="edit-type">
-            Type d'évènement
+            Type d&apos;évènement
           </label>
           <select
             id="edit-type"
@@ -93,7 +115,7 @@ export function PostEditModal({ post, onSave, onDelete }: Props) {
               onChange={(e) => setIsFeatured(e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-200"
             />
-            Mettre l'évènement à la une
+            Mettre l&apos;évènement à la une
           </label>
         </div>
 
