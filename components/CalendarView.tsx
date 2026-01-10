@@ -145,66 +145,67 @@ export default function CalendarView() {
   }
 
   const buttonBase =
-    "px-3 py-2 rounded-lg border text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+    "px-3 py-2 rounded-lg border text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer";
+
+  const arrowBase =
+    "h-10 w-10 pb-2 flex items-center justify-center shrink-0 rounded-lg text-4xl leading-none hover:scale-98 transition-colors cursor-pointer";
 
   return (
     <section className="w-full">
-      {/* Choix du mode */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <button
-          className={`${buttonBase} ${
-            mode === "3 jours"
-              ? "bg-blue-100 text-blue-800 border-blue-200"
-              : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-          }`}
-          onClick={() => setModeAndReset("3 jours")}
-        >
-          3 jours
-        </button>
-        <button
-          className={`${buttonBase} ${
-            mode === "1 semaine"
-              ? "bg-blue-100 text-blue-800 border-blue-200"
-              : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-          }`}
-          onClick={() => setModeAndReset("1 semaine")}
-        >
-          1 semaine
-        </button>
-        <button
-          className={`${buttonBase} ${
-            mode === "1 mois"
-              ? "bg-blue-100 text-blue-800 border-blue-200"
-              : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-          }`}
-          onClick={() => setModeAndReset("1 mois")}
-        >
-          1 mois
-        </button>
-      </div>
-
-      {/* Récap période + flèches */}
-      <div className="flex items-center justify-between gap-3">
-        <button
-          onClick={goPrev}
-          className={`${buttonBase} bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100`}
-          aria-label="Période précédente"
-        >
-          ←
-        </button>
-
-        <div className="text-sm font-semibold text-gray-900">
-          {mode} : du {formatShortFR(periodStart)} au {formatShortFR(periodEnd)}
+      
+        {/* Choix du mode */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            className={`${buttonBase} ${
+              mode === "3 jours"
+                ? "bg-blue-100 text-blue-800 border-blue-200"
+                : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:scale-98"
+            }`}
+            onClick={() => setModeAndReset("3 jours")}
+          >
+            3 jours
+          </button>
+          <button
+            className={`${buttonBase} ${
+              mode === "1 semaine"
+                ? "bg-blue-100 text-blue-800 border-blue-200"
+                : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:scale-98"
+            }`}
+            onClick={() => setModeAndReset("1 semaine")}
+          >
+            1 semaine
+          </button>
+          <button
+            className={`${buttonBase} ${
+              mode === "1 mois"
+                ? "bg-blue-100 text-blue-800 border-blue-200"
+                : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:scale-98"
+            }`}
+            onClick={() => setModeAndReset("1 mois")}
+          >
+            1 mois
+          </button>
         </div>
-
-        <button
-          onClick={goNext}
-          className={`${buttonBase} bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100`}
-          aria-label="Période suivante"
-        >
-          →
-        </button>
-      </div>
+        {/* Récap période + flèches */}
+        <div className="flex items-center justify-between gap-3 w-100">
+          <button
+            onClick={goPrev}
+            className={`${arrowBase}`}
+            aria-label="Période précédente"
+          >
+            ←
+          </button>
+          <div className="text-sm font-semibold text-gray-900">
+            {mode} : du {formatShortFR(periodStart)} au {formatShortFR(periodEnd)}
+          </div>
+          <button
+            onClick={goNext}
+            className={`${arrowBase}`}
+            aria-label="Période suivante"
+          >
+            →
+          </button>
+        </div>
 
       {/* Grille des jours */}
       <div className={`mt-4 grid ${gridCols} gap-2`}>
