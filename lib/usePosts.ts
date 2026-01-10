@@ -32,27 +32,45 @@ export function usePosts() {
   }, []);
 
   const create = async (input: CreatePostInput) => {
-    const created = await createPost(input);
-    setPosts((prev) => sortByCreatedDesc([created, ...prev]));
+    try {
+      setError(null);
+      const created = await createPost(input);
+      setPosts((prev) => sortByCreatedDesc([created, ...prev]));
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    }
   };
 
   const update = async (post: Post) => {
-    const updated = await updatePost(post.id, {
-      content: post.title,
-      type: post.type,
-      startAt: post.startAt,
-      endAt: post.endAt ?? null,
-      authorName: post.authorName,
-      authorEmail: post.authorEmail ?? null,
-    });
-    setPosts((prev) =>
-      sortByCreatedDesc(prev.map((p) => (p.id === updated.id ? updated : p)))
-    );
+    try {
+      setError(null);
+      const updated = await updatePost(post.id, {
+        content: post.title,
+        type: post.type,
+        startAt: post.startAt,
+        endAt: post.endAt ?? null,
+        authorName: post.authorName,
+        authorEmail: post.authorEmail ?? null,
+      });
+      setPosts((prev) =>
+        sortByCreatedDesc(prev.map((p) => (p.id === updated.id ? updated : p)))
+      );
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    }
   };
 
   const remove = async (post: Post) => {
-    await deletePost(post.id);
-    setPosts((prev) => prev.filter((p) => p.id !== post.id));
+    try {
+      setError(null);
+      await deletePost(post.id);
+      setPosts((prev) => prev.filter((p) => p.id !== post.id));
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    }
   };
 
   return {

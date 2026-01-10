@@ -18,6 +18,7 @@ export function PostForm({ onCreate }: Props) {
   const [startDate, setStartDate] = useState(() => toDateInputValue(new Date()));
   const [endDate, setEndDate] = useState("");
   const [author, setAuthor] = useState("Vous");
+  const [message, setMessage] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,14 +28,22 @@ export function PostForm({ onCreate }: Props) {
     const endAt = endDate ? fromDateInputValue(endDate) : undefined;
     const finalType = isFeatured ? "A_LA_UNE" : type;
 
-    await onCreate({
-      content: content.trim(),
-      type: finalType,
-      startAt,
-      endAt,
-      authorName: author.trim() || "Inconnu",
-      authorEmail: undefined,
-    });
+    try {
+      setMessage(null);
+      await onCreate({
+        content: content.trim(),
+        type: finalType,
+        startAt,
+        endAt,
+        authorName: author.trim() || "Inconnu",
+        authorEmail: undefined,
+      });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erreur lors de la création.";
+      setMessage(message);
+      return;
+    }
 
     setContent("");
     setEndDate("");
@@ -46,6 +55,7 @@ export function PostForm({ onCreate }: Props) {
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold text-gray-900">Poster un évènement</h1>
       </header>
+      {message && <p className="text-sm text-red-600 mt-2">{message}</p>}
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
         <div className="md:col-span-2 flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-800" htmlFor="type">

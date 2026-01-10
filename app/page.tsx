@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePostsContext } from "@/components/PostsProvider";
+import { useAuth } from "@/components/AuthGate";
 
 const CalendarView = dynamic(() => import("@/components/CalendarView"), {
   ssr: false,
@@ -9,6 +10,7 @@ const CalendarView = dynamic(() => import("@/components/CalendarView"), {
 
 export default function Home() {
   const { posts, updatePost, deletePost } = usePostsContext();
+  const { isGuest } = useAuth();
 
   return (
     <div className="flex flex-1 flex-col gap-4 w-full mx-auto font-sans p-2">
@@ -20,8 +22,8 @@ export default function Home() {
 
       <CalendarView
         posts={posts}
-        onUpdatePost={updatePost}
-        onDeletePost={deletePost}
+        onUpdatePost={isGuest ? undefined : updatePost}
+        onDeletePost={isGuest ? undefined : deletePost}
       />
     </div>
   );

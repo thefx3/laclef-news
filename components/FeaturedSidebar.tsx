@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import type { Post } from "@/lib/types";
 import { formatRemainingDays, sortByCreatedDesc } from "@/lib/calendarUtils";
-import { PostModal } from "./calendar/PostModal";
 
 type Props = {
   posts: Post[];
+  onSelect?: (post: Post) => void;
 };
 
-export function FeaturedSidebar({ posts }: Props) {
-  const [selected, setSelected] = useState<Post | null>(null);
+export function FeaturedSidebar({ posts, onSelect }: Props) {
   const sorted = sortByCreatedDesc(posts);
 
   return (
@@ -26,7 +24,7 @@ export function FeaturedSidebar({ posts }: Props) {
             <li
               key={post.id}
               className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => setSelected(post)}
+              onClick={() => onSelect?.(post)}
             >
               <div className="font-semibold text-gray-900 leading-snug">
                 {post.title}
@@ -37,10 +35,6 @@ export function FeaturedSidebar({ posts }: Props) {
             </li>
           ))}
         </ul>
-      )}
-
-      {selected && (
-        <PostModal post={selected} onClose={() => setSelected(null)} />
       )}
     </nav>
   );

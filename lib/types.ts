@@ -1,4 +1,4 @@
-export type PostType = "A_LA_UNE" | "INFO" | "ABSENCE" | "EVENT";
+export type PostType = "A_LA_UNE" | "INFO" | "ABSENCE" | "EVENT" | "REMPLACEMENT";
 
 export type Post = {
   id: string;

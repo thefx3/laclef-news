@@ -49,7 +49,7 @@ export default function CalendarView({
   const [expandedDay, setExpandedDay] = useState<Date | null>(null);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const today = startOfDay(new Date());
-  const calendarPosts = posts ?? [];
+  const calendarPosts = (posts ?? []).filter((p) => p.type !== "A_LA_UNE");
 
   // 1) Calcul de la période (start/end) en fonction du mode + cursor
   const { periodStart, periodEnd } = useMemo(() => {

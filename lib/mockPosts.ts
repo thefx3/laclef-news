@@ -13,7 +13,7 @@ function randomInt(rand: () => number, min: number, max: number) {
   return Math.floor(rand() * (max - min + 1)) + min;
 }
 
-const typeCycle: PostType[] = ["A_LA_UNE", "INFO", "ABSENCE", "EVENT"];
+const typeCycle: PostType[] = ["A_LA_UNE", "INFO", "ABSENCE", "EVENT", "REMPLACEMENT"];
 const authorCycle = ["PL", "ZA", "Admin", "CG", "JD", "MB", "LM", "AN"];
 
 function makeTitle(type: PostType, index: number) {
@@ -21,6 +21,7 @@ function makeTitle(type: PostType, index: number) {
     A_LA_UNE: "À la une",
     INFO: "Info",
     ABSENCE: "Absence",
+    REMPLACEMENT: "Remplacement",
     EVENT: "Évènement",
   }[type];
   return `${base} #${index + 1}`;

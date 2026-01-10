@@ -9,6 +9,7 @@ import { PostList } from "@/components/posts/PostList";
 import { type FilterMode } from "@/components/posts/types";
 import { PostEditModal } from "@/components/posts/PostEditModal";
 import { usePostsContext } from "@/components/PostsProvider";
+import { useAuth } from "@/components/AuthGate";
 
 import type { Post } from "@/lib/types";
 import {
@@ -22,6 +23,7 @@ import {
 export default function PostsPage() {
   const { posts, loading, error, createPost, updatePost, deletePost } =
     usePostsContext();
+  const { isGuest } = useAuth();
   const [selected, setSelected] = useState<Post | null>(null);
   const [editing, setEditing] = useState<Post | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
@@ -55,7 +57,7 @@ export default function PostsPage() {
 
   return (
     <div className="flex flex-col gap-12 w-full mx-auto font-sans">
-      <PostForm onCreate={createPost} />
+      {!isGuest && <PostForm onCreate={createPost} />}
 
       <section>
         <PostFilters
@@ -74,11 +76,11 @@ export default function PostsPage() {
         <PostList
           posts={filteredPosts}
           onSelect={setSelected}
-          onEdit={(post) => {
+          onEdit={isGuest ? () => {} : (post) => {
             setEditing(post);
             setSelected(null);
           }}
-          onDelete={(post) => {
+          onDelete={isGuest ? () => {} : (post) => {
             void deletePost(post);
             if (selected?.id === post.id) setSelected(null);
             if (editing?.id === post.id) setEditing(null);
@@ -90,17 +92,17 @@ export default function PostsPage() {
         <PostModal
           post={selected}
           onClose={() => setSelected(null)}
-          onEdit={(post) => {
+          onEdit={isGuest ? undefined : (post) => {
             setEditing(post);
             setSelected(null);
           }}
-          onDelete={(post) => {
+          onDelete={isGuest ? undefined : (post) => {
             void deletePost(post);
             setSelected(null);
           }}
         />
       )}
-      {editing && (
+      {editing && !isGuest && (
         <PostEditModal
           key={editing.id}
           post={editing}
