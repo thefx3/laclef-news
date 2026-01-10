@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { Home, PenSquare, Archive, Users } from "lucide-react";
 import { mockPosts } from "@/lib/mockPosts";
 import { FeaturedSidebar } from "@/components/FeaturedSidebar";
+import { HeaderNav } from "@/components/HeaderNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,14 +40,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
 
   const navLinkClass =
-  "font-bold text-md tracking-widest text-gray-700 px-4 py-3 rounded-lg transition-colors hover:text-gray-900 hover:bg-[linear-gradient(100deg,_#D2F3FC,_#FACFCE)] text-gray-900 active:bg-[linear-gradient(100deg,_#D2F3FC,_#FACFCE)]";
+    "font-bold text-md tracking-widest px-4 py-3 rounded-lg transition-colors hover:text-gray-900 hover:bg-[linear-gradient(100deg,_#D2F3FC,_#FACFCE)]";
 
   const links = [
-    { href: "/", label: "Home", Icon: Home },
-    { href: "/posts", label: "Publier", Icon: PenSquare },
-    { href: "/archives", label: "Archives", Icon: Archive },
-    { href: "/users", label: "Utilisateurs", Icon: Users },
-  ];
+    { href: "/", label: "Home", icon: "home" },
+    { href: "/posts", label: "Publier", icon: "pen" },
+    { href: "/archives", label: "Archives", icon: "archive" },
+    { href: "/users", label: "Utilisateurs", icon: "users" },
+  ] as const;
 
   const featured = isActiveFeatured(new Date());
 
@@ -62,18 +62,11 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                 La CLEF
             </Link>
 
-            <nav className="flex flex-col gap-4">
-            {links.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`${navLinkClass} inline-flex items-center gap-2`}
-              >
-                <link.Icon className="h-4 w-4" aria-hidden="true" />
-                {link.label}
-              </Link>
-            ))}
-            </nav>
+            <HeaderNav
+              links={links}
+              className="flex flex-col gap-4"
+              linkBaseClass={navLinkClass}
+            />
 
           </header>
 

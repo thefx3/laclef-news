@@ -21,19 +21,19 @@ function revive(posts: unknown[]): Post[] {
 
 function loadInitial(): Post[] {
   if (cache) return cache;
-  if (typeof window !== "undefined") {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        cache = revive(JSON.parse(raw));
-        return cache;
-      } catch {
-        // ignore parse errors and fall back to mocks
-      }
-    }
-  }
   cache = sortByCreatedDesc(mockPosts);
   return cache;
+}
+
+function readFromStorage(): Post[] | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.localStorage.getItem(STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    return revive(JSON.parse(raw));
+  } catch {
+    return null;
+  }
 }
 
 function persist(posts: Post[]) {
@@ -48,6 +48,11 @@ export function usePostStore() {
   const [posts, setPosts] = useState<Post[]>(() => loadInitial());
 
   useEffect(() => {
+    const stored = readFromStorage();
+    if (stored) {
+      persist(stored);
+    }
+
     const listener = (next: Post[]) => setPosts(next);
     subscribers.add(listener);
     return () => subscribers.delete(listener);
