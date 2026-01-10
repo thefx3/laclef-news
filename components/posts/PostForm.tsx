@@ -37,6 +37,7 @@ export function PostForm({ onAdd, posts }: Props) {
       endAt,
       authorName: author.trim() || "Inconnu",
       createdAt: new Date(),
+      lastEditedAt: new Date(),
     };
 
     const next = sortByCreatedDesc([newPost, ...posts]);
@@ -83,7 +84,7 @@ export function PostForm({ onAdd, posts }: Props) {
           </label>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row gap-2">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-800" htmlFor="start-date">
               Date de début

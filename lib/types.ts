@@ -5,6 +5,7 @@ export type Post = {
   title: string;
   description?: string;
   type: PostType;
+  lastEditedAt?: Date;
 
   // Affichage sur une date (jour J) ou sur une période
   startAt: Date;

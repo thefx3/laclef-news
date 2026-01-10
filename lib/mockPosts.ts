@@ -68,6 +68,11 @@ function buildMockPosts(count = 50): Post[] {
         now.getMonth(),
         now.getDate() + randomInt(rand, -20, 0)
       ),
+      lastEditedAt: new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + randomInt(rand, -10, 5)
+      ),
     });
   }
 

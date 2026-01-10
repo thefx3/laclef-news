@@ -20,9 +20,11 @@ import { PostModal } from "./calendar/PostModal";
 import { DayModal } from "./calendar/DayModal";
 import { PostGrid } from "./calendar/PostGrid";
 import { PostList } from "./calendar/PostList";
+import { PostEditModal } from "./posts/PostEditModal";
 
 type CalendarViewProps = {
   posts?: Post[];
+  setPosts?: (next: Post[] | ((prev: Post[]) => Post[])) => void;
 };
 
 type Mode = "day" | "3days" | "week" | "month";
@@ -35,11 +37,12 @@ const MODES = [
 ] as const;
 
 
-export default function CalendarView({ posts = [] }: CalendarViewProps) {
+export default function CalendarView({ posts = [], setPosts }: CalendarViewProps) {
   const [mode, setMode] = useState<Mode>("day");
   const [cursor, setCursor] = useState<Date>(() => startOfDay(new Date()));
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [expandedDay, setExpandedDay] = useState<Date | null>(null);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
   const today = startOfDay(new Date());
   const calendarPosts = posts ?? [];
 
@@ -250,7 +253,34 @@ export default function CalendarView({ posts = [] }: CalendarViewProps) {
 
       {/* Modal détail d’un post */}
       {selectedPost && (
-        <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+        <PostModal
+          post={selectedPost}
+          onClose={() => setSelectedPost(null)}
+          onEdit={(post) => {
+            setEditingPost(post);
+            setSelectedPost(null);
+          }}
+          onDelete={(post) => {
+            setPosts?.((prev) => prev.filter((p) => p.id !== post.id));
+            setSelectedPost(null);
+          }}
+        />
+      )}
+
+      {editingPost && setPosts && (
+        <PostEditModal
+          post={editingPost}
+          onSave={(updated) => {
+            setPosts((prev) =>
+              prev.map((p) => (p.id === updated.id ? updated : p))
+            );
+            setEditingPost(null);
+          }}
+          onDelete={(post) => {
+            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            setEditingPost(null);
+          }}
+        />
       )}
 
     </section>

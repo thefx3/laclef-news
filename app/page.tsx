@@ -1,7 +1,11 @@
+"use client";
+
 import CalendarView from "@/components/CalendarView";
-import { mockPosts } from "@/lib/mockPosts";
+import { usePostStore } from "@/lib/postStore";
 
 export default function Home() {
+  const { posts, setPosts } = usePostStore();
+
   return (
     <div className="flex flex-1 flex-col gap-4 w-full mx-auto font-sans p-2">
       <main className="flex w-full flex-col justify-between py-2 items-start">
@@ -10,8 +14,7 @@ export default function Home() {
         </h1>
       </main>
 
-      <CalendarView posts={mockPosts}/>
-    
+      <CalendarView posts={posts} setPosts={setPosts} />
     </div>
   );
 }

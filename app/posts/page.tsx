@@ -6,9 +6,10 @@ import { PostModal } from "@/components/calendar/PostModal";
 import { PostFilters } from "@/components/posts/PostFilters";
 import { PostForm } from "@/components/posts/PostForm";
 import { PostList } from "@/components/posts/PostList";
-import { TYPE_OPTIONS, type FilterMode } from "@/components/posts/types";
-import { mockPosts } from "@/lib/mockPosts";
-import type { Post, PostType } from "@/lib/types";
+import { type FilterMode } from "@/components/posts/types";
+import { PostEditModal } from "@/components/posts/PostEditModal";
+import { usePostStore } from "@/lib/postStore";
+import type { Post } from "@/lib/types";
 import {
   addDays,
   isSameDay,
@@ -17,8 +18,9 @@ import {
 } from "@/lib/calendarUtils";
 
 export default function PostsPage() {
-  const [posts, setPosts] = useState<Post[]>(() => sortByCreatedDesc(mockPosts));
+  const { posts, setPosts } = usePostStore();
   const [selected, setSelected] = useState<Post | null>(null);
+  const [editing, setEditing] = useState<Post | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [filterDate, setFilterDate] = useState(() => new Date().toISOString().slice(0, 10));
 
@@ -60,10 +62,51 @@ export default function PostsPage() {
           onChangeDate={setFilterDate}
         />
 
-        <PostList posts={filteredPosts} onSelect={setSelected} />
+        <PostList
+          posts={filteredPosts}
+          onSelect={setSelected}
+          onEdit={(post) => {
+            setEditing(post);
+            setSelected(null);
+          }}
+          onDelete={(post) => {
+            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            if (selected?.id === post.id) setSelected(null);
+            if (editing?.id === post.id) setEditing(null);
+          }}
+        />
       </section>
 
-      {selected && <PostModal post={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <PostModal
+          post={selected}
+          onClose={() => setSelected(null)}
+          onEdit={(post) => {
+            setEditing(post);
+            setSelected(null);
+          }}
+          onDelete={(post) => {
+            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            setSelected(null);
+          }}
+        />
+      )}
+      {editing && (
+        <PostEditModal
+          post={editing}
+          allPosts={posts}
+          onSave={(updated) => {
+            setPosts((prev) =>
+              sortByCreatedDesc(prev.map((p) => (p.id === updated.id ? updated : p)))
+            );
+            setEditing(null);
+          }}
+          onDelete={(post) => {
+            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            setEditing(null);
+          }}
+        />
+      )}
     </div>
   );
 }
