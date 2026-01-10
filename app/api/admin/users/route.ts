@@ -18,11 +18,16 @@ async function requireAdmin(req: Request) {
     .eq("user_id", userData.user.id)
     .single();
 
-  if (profileErr || !profile) {
+  if (profileErr) {
+    return { error: profileErr.message, status: 403 } as const;
+  }
+  if (!profile) {
     return { error: "Profile not found", status: 403 } as const;
   }
 
   if (profile.role !== "ADMIN" && profile.role !== "SUPER_ADMIN") {
+    console.log(profile.role);
+    
     return { error: "Forbidden", status: 403 } as const;
   }
 

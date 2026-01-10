@@ -139,6 +139,17 @@ export default function CalendarView({
     });
   }
 
+  function formatPeriodRecap() {
+    if (mode === "month") {
+      const label = periodStart.toLocaleDateString("fr-FR", {
+        month: "long",
+        year: "numeric",
+      });
+      return label.charAt(0).toUpperCase() + label.slice(1);
+    }
+    return `du ${formatShortFR(periodStart)} au ${formatShortFR(periodEnd)}`;
+  }
+
   const modeLabel = MODES.find((m) => m.key === mode)?.label ?? mode;
 
   const isDayMode = mode === "day";
@@ -184,7 +195,7 @@ export default function CalendarView({
             ←
           </button>
           <div className="text-sm font-semibold text-gray-900">
-          {modeLabel} : du {formatShortFR(periodStart)} au {formatShortFR(periodEnd)}
+            {modeLabel} : {formatPeriodRecap()}
           </div>
 
           <button
