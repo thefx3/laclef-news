@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { Home, PenSquare, Archive, Users } from "lucide-react";
+import { mockPosts } from "@/lib/mockPosts";
+import { FeaturedSidebar } from "@/components/FeaturedSidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,6 +16,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+function startOfDay(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function isActiveFeatured(now: Date) {
+  const today = startOfDay(now);
+  return mockPosts.filter((post) => {
+    if (post.type !== "A_LA_UNE") return false;
+
+    const start = startOfDay(post.startAt);
+    const end = post.endAt ? startOfDay(post.endAt) : start;
+
+    return start <= today && today <= end;
+  });
+}
+
 export const metadata: Metadata = {
   title: "La CLEF News",
   description: "Stay updated with the latest news from La CLEF",
@@ -22,7 +40,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
 
   const navLinkClass =
-  "font-bold text-md tracking-widest text-gray-700 px-4 py-3 rounded-lg transition-colors hover:text-gray-900 hover:bg-[linear-gradient(100deg,_#D2F3FC,_#FACFCE)]";
+  "font-bold text-md tracking-widest text-gray-700 px-4 py-3 rounded-lg transition-colors hover:text-gray-900 hover:bg-[linear-gradient(100deg,_#D2F3FC,_#FACFCE)] text-gray-900 active:bg-[linear-gradient(100deg,_#D2F3FC,_#FACFCE)]";
 
   const links = [
     { href: "/", label: "Home", Icon: Home },
@@ -30,7 +48,8 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
     { href: "/archives", label: "Archives", Icon: Archive },
     { href: "/users", label: "Utilisateurs", Icon: Users },
   ];
-  
+
+  const featured = isActiveFeatured(new Date());
 
   return (
     <html lang="en">
@@ -65,9 +84,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
             {children}
           </main>
 
-          <nav className="p-4 py-6 rounded-xl bg-white font-bold tracking-[0.25em] text-xl uppercase shadow-sm w-full lg:w-64 text-center">
-            A la une
-          </nav>
+          <FeaturedSidebar posts={featured} />
         </div>
       </body>
     </html>

@@ -1,4 +1,5 @@
 import CalendarView from "@/components/CalendarView";
+import { mockPosts } from "@/lib/mockPosts";
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
         </h1>
       </main>
 
-      <CalendarView />
+      <CalendarView posts={mockPosts}/>
     
     </div>
   );
