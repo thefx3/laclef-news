@@ -1,14 +1,14 @@
- "use client";
+"use client";
 
 import dynamic from "next/dynamic";
-import { usePostStore } from "@/lib/postStore";
+import { usePostsContext } from "@/components/PostsProvider";
 
 const CalendarView = dynamic(() => import("@/components/CalendarView"), {
   ssr: false,
 });
 
 export default function Home() {
-  const { posts, setPosts } = usePostStore();
+  const { posts, updatePost, deletePost } = usePostsContext();
 
   return (
     <div className="flex flex-1 flex-col gap-4 w-full mx-auto font-sans p-2">
@@ -18,7 +18,11 @@ export default function Home() {
         </h1>
       </main>
 
-      <CalendarView posts={posts} setPosts={setPosts} />
+      <CalendarView
+        posts={posts}
+        onUpdatePost={updatePost}
+        onDeletePost={deletePost}
+      />
     </div>
   );
 }

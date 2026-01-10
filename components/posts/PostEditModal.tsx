@@ -5,43 +5,42 @@ import { Calendar } from "lucide-react";
 import type { Post, PostType } from "@/lib/types";
 import { TYPE_OPTIONS } from "./types";
 import { Modal } from "../calendar/Modal";
-import { startOfDay } from "@/lib/calendarUtils";
+import { fromDateInputValue, toDateInputValue } from "@/lib/calendarUtils";
 
 type Props = {
   post: Post;
   onSave: (updated: Post) => void;
   onDelete: (post: Post) => void;
+  onCancel: () => void;
 };
 
-export function PostEditModal({ post, onSave, onDelete }: Props) {
-  const [title, setTitle] = useState(post.title);
-  const [description, setDescription] = useState(post.description ?? "");
+export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
+  const [content, setContent] = useState(post.title);
   const [type, setType] = useState<PostType>(
     post.type === "A_LA_UNE" ? "EVENT" : post.type
   );
   const [isFeatured, setIsFeatured] = useState(post.type === "A_LA_UNE");
-  const [startDate, setStartDate] = useState(() => toInputDate(post.startAt));
+  const [startDate, setStartDate] = useState(() => toDateInputValue(post.startAt));
   const [endDate, setEndDate] = useState(() =>
-    post.endAt ? toInputDate(post.endAt) : ""
+    post.endAt ? toDateInputValue(post.endAt) : ""
   );
-  const [author, setAuthor] = useState(post.authorName);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !startDate) return;
+    if (!content.trim() || !startDate) return;
 
-    const startAt = startOfDay(new Date(startDate));
-    const endAt = endDate ? startOfDay(new Date(endDate)) : undefined;
+    const startAt = fromDateInputValue(startDate);
+    const endAt = endDate ? fromDateInputValue(endDate) : undefined;
     const finalType = isFeatured ? "A_LA_UNE" : type;
 
     const updated: Post = {
       ...post,
-      title: title.trim(),
-      description: description.trim() || undefined,
+      title: content.trim(),
+      description: undefined,
       type: finalType,
       startAt,
       endAt,
-      authorName: author.trim() || "Inconnu",
+      authorName: post.authorName,
       lastEditedAt: new Date(),
     };
 
@@ -49,44 +48,17 @@ export function PostEditModal({ post, onSave, onDelete }: Props) {
   }
 
   return (
-    <Modal onClose={() => onSave(post)}>
+    <Modal onClose={onCancel}>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-800" htmlFor="edit-title">
-            Titre
-          </label>
-          <input
-            id="edit-title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
-            required
-          />
-        </div>
-
-        {/* <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-800" htmlFor="edit-author">
-            Auteur
-          </label>
-          <input
-            id="edit-author"
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          />
-        </div> */}
-
         <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-800" htmlFor="edit-description">
-            Evènement
+          <label className="text-sm font-medium text-gray-800" htmlFor="edit-content">
+            Contenu
           </label>
           <textarea
-            id="edit-description"
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            id="edit-content"
+            rows={4}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
           />
         </div>
@@ -158,7 +130,7 @@ export function PostEditModal({ post, onSave, onDelete }: Props) {
             <button
               type="button"
               className="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
-              onClick={() => onSave(post)}
+              onClick={onCancel}
             >
               Annuler
             </button>
@@ -174,8 +146,4 @@ export function PostEditModal({ post, onSave, onDelete }: Props) {
       </form>
     </Modal>
   );
-}
-
-function toInputDate(d: Date) {
-  return new Date(d).toISOString().slice(0, 10);
 }

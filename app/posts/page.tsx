@@ -8,21 +8,24 @@ import { PostForm } from "@/components/posts/PostForm";
 import { PostList } from "@/components/posts/PostList";
 import { type FilterMode } from "@/components/posts/types";
 import { PostEditModal } from "@/components/posts/PostEditModal";
-import { usePostStore } from "@/lib/postStore";
+import { usePostsContext } from "@/components/PostsProvider";
+
 import type { Post } from "@/lib/types";
 import {
   addDays,
   isSameDay,
   sortByCreatedDesc,
   startOfDay,
+  toDateInputValue,
 } from "@/lib/calendarUtils";
 
 export default function PostsPage() {
-  const { posts, setPosts } = usePostStore();
+  const { posts, loading, error, createPost, updatePost, deletePost } =
+    usePostsContext();
   const [selected, setSelected] = useState<Post | null>(null);
   const [editing, setEditing] = useState<Post | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
-  const [filterDate, setFilterDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [filterDate, setFilterDate] = useState(() => toDateInputValue(new Date()));
 
   const filteredPosts = useMemo(() => {
     const base = sortByCreatedDesc(posts);
@@ -52,7 +55,7 @@ export default function PostsPage() {
 
   return (
     <div className="flex flex-col gap-12 w-full mx-auto font-sans">
-      <PostForm posts={posts} onAdd={setPosts} />
+      <PostForm onCreate={createPost} />
 
       <section>
         <PostFilters
@@ -62,6 +65,12 @@ export default function PostsPage() {
           onChangeDate={setFilterDate}
         />
 
+        {loading && <p className="text-sm text-gray-500">Chargement...</p>}
+        {error && (
+          <p className="text-sm text-red-600">
+            Erreur lors du chargement des posts.
+          </p>
+        )}
         <PostList
           posts={filteredPosts}
           onSelect={setSelected}
@@ -70,7 +79,7 @@ export default function PostsPage() {
             setSelected(null);
           }}
           onDelete={(post) => {
-            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            void deletePost(post);
             if (selected?.id === post.id) setSelected(null);
             if (editing?.id === post.id) setEditing(null);
           }}
@@ -86,7 +95,7 @@ export default function PostsPage() {
             setSelected(null);
           }}
           onDelete={(post) => {
-            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            void deletePost(post);
             setSelected(null);
           }}
         />
@@ -96,15 +105,14 @@ export default function PostsPage() {
           key={editing.id}
           post={editing}
           onSave={(updated) => {
-            setPosts((prev) =>
-              sortByCreatedDesc(prev.map((p) => (p.id === updated.id ? updated : p)))
-            );
+            void updatePost(updated);
             setEditing(null);
           }}
           onDelete={(post) => {
-            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            void deletePost(post);
             setEditing(null);
           }}
+          onCancel={() => setEditing(null)}
         />
       )}
     </div>

@@ -24,7 +24,8 @@ import { PostEditModal } from "./posts/PostEditModal";
 
 type CalendarViewProps = {
   posts?: Post[];
-  setPosts?: (next: Post[] | ((prev: Post[]) => Post[])) => void;
+  onUpdatePost?: (post: Post) => Promise<void> | void;
+  onDeletePost?: (post: Post) => Promise<void> | void;
 };
 
 type Mode = "day" | "3days" | "week" | "month";
@@ -37,7 +38,11 @@ const MODES = [
 ] as const;
 
 
-export default function CalendarView({ posts = [], setPosts }: CalendarViewProps) {
+export default function CalendarView({
+  posts = [],
+  onUpdatePost,
+  onDeletePost,
+}: CalendarViewProps) {
   const [mode, setMode] = useState<Mode>("day");
   const [cursor, setCursor] = useState<Date>(() => startOfDay(new Date()));
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -261,25 +266,24 @@ export default function CalendarView({ posts = [], setPosts }: CalendarViewProps
             setSelectedPost(null);
           }}
           onDelete={(post) => {
-            setPosts?.((prev) => prev.filter((p) => p.id !== post.id));
+            onDeletePost?.(post);
             setSelectedPost(null);
           }}
         />
       )}
 
-      {editingPost && setPosts && (
+      {editingPost && (
         <PostEditModal
           post={editingPost}
           onSave={(updated) => {
-            setPosts((prev) =>
-              prev.map((p) => (p.id === updated.id ? updated : p))
-            );
+            onUpdatePost?.(updated);
             setEditingPost(null);
           }}
           onDelete={(post) => {
-            setPosts((prev) => prev.filter((p) => p.id !== post.id));
+            onDeletePost?.(post);
             setEditingPost(null);
           }}
+          onCancel={() => setEditingPost(null)}
         />
       )}
 

@@ -1,4 +1,4 @@
-export type PostType = "A_LA_UNE" | "RETARD" | "ABSENCE" | "REMPLACEMENT" | "EVENT";
+export type PostType = "A_LA_UNE" | "INFO" | "ABSENCE" | "EVENT";
 
 export type Post = {
   id: string;
@@ -12,5 +12,6 @@ export type Post = {
   endAt?: Date;
 
   authorName: string;
+  authorEmail: string;
   createdAt: Date;
 };

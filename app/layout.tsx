@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { mockPosts } from "@/lib/mockPosts";
-import { FeaturedSidebar } from "@/components/FeaturedSidebar";
+
+import { FeaturedSidebarClient } from "@/components/FeaturedSidebarClient";
 import { HeaderNav } from "@/components/HeaderNav";
+import { PostsProvider } from "@/components/PostsProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,21 +17,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-function isActiveFeatured(now: Date) {
-  const today = startOfDay(now);
-  return mockPosts.filter((post) => {
-    if (post.type !== "A_LA_UNE") return false;
-
-    const start = startOfDay(post.startAt);
-    const end = post.endAt ? startOfDay(post.endAt) : start;
-
-    return start <= today && today <= end;
-  });
-}
 
 export const metadata: Metadata = {
   title: "La CLEF News",
@@ -49,8 +35,6 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
     { href: "/users", label: "Utilisateurs", icon: "users" },
   ] as const;
 
-  const featured = isActiveFeatured(new Date());
-
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -63,7 +47,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
             </Link>
 
             <HeaderNav
-              links={links}
+              links={[...links]}
               className="flex flex-col gap-4"
               linkBaseClass={navLinkClass}
             />
@@ -74,10 +58,10 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
             <header className="flex w-full border px-4 py-3 rounded-xl bg-white shadow-sm">
             Something to write here !
             </header>
-            {children}
+            <PostsProvider>{children}</PostsProvider>
           </main>
 
-          <FeaturedSidebar posts={featured} />
+          <FeaturedSidebarClient />
         </div>
       </body>
     </html>

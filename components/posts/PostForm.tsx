@@ -2,49 +2,41 @@
 
 import { Calendar } from "lucide-react";
 import { useState } from "react";
-import type { Post, PostType } from "@/lib/types";
-import { sortByCreatedDesc, startOfDay } from "@/lib/calendarUtils";
+import type { PostType } from "@/lib/types";
+import { fromDateInputValue, toDateInputValue } from "@/lib/calendarUtils";
 import { TYPE_OPTIONS } from "./types";
+import type { CreatePostInput } from "@/lib/postsRepo";
 
 type Props = {
-  onAdd: (posts: Post[]) => void;
-  posts: Post[];
+  onCreate: (input: CreatePostInput) => Promise<void> | void;
 };
 
-export function PostForm({ onAdd, posts }: Props) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+export function PostForm({ onCreate }: Props) {
+  const [content, setContent] = useState("");
   const [type, setType] = useState<PostType>("EVENT");
   const [isFeatured, setIsFeatured] = useState(false);
-  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(() => toDateInputValue(new Date()));
   const [endDate, setEndDate] = useState("");
   const [author, setAuthor] = useState("Vous");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !startDate) return;
+    if (!content.trim() || !startDate) return;
 
-    const startAt = startOfDay(new Date(startDate));
-    const endAt = endDate ? startOfDay(new Date(endDate)) : undefined;
+    const startAt = fromDateInputValue(startDate);
+    const endAt = endDate ? fromDateInputValue(endDate) : undefined;
     const finalType = isFeatured ? "A_LA_UNE" : type;
 
-    const newPost: Post = {
-      id: `local-${Date.now()}`,
-      title: title.trim(),
-      description: description.trim() || undefined,
+    await onCreate({
+      content: content.trim(),
       type: finalType,
       startAt,
       endAt,
       authorName: author.trim() || "Inconnu",
-      createdAt: new Date(),
-      lastEditedAt: new Date(),
-    };
+      authorEmail: undefined,
+    });
 
-    const next = sortByCreatedDesc([newPost, ...posts]);
-    onAdd(next);
-
-    setTitle("");
-    setDescription("");
+    setContent("");
     setEndDate("");
     setIsFeatured(false);
   }
@@ -55,8 +47,7 @@ export function PostForm({ onAdd, posts }: Props) {
         <h1 className="text-2xl font-bold text-gray-900">Poster un évènement</h1>
       </header>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
-
-      <div className="flex flex-col gap-2">
+        <div className="md:col-span-2 flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-800" htmlFor="type">
             Type d&apos;évènement
           </label>
@@ -84,7 +75,7 @@ export function PostForm({ onAdd, posts }: Props) {
           </label>
         </div>
 
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row  flex-wrap gap-2">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-800" htmlFor="start-date">
               Date de début
@@ -115,15 +106,15 @@ export function PostForm({ onAdd, posts }: Props) {
 
 
         <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-800" htmlFor="description">
-            Détails
+          <label className="text-sm font-medium text-gray-800" htmlFor="content">
+            Contenu
           </label>
           <textarea
-            id="description"
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description, lieu, intervenants..."
+            id="content"
+            rows={4}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Texte de la publication..."
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
           />
         </div>

@@ -38,6 +38,18 @@ export function formatShortFR(d: Date) {
   });
 }
 
+export function fromDateInputValue(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+export function toDateInputValue(date: Date) {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 export function formatDayLabelFR(d: Date) {
   return d.toLocaleDateString("fr-FR", {
     weekday: "long",
