@@ -18,6 +18,11 @@ export function PostModal({ post, onClose }: Props) {
           <div className="text-lg font-semibold text-gray-900">{post.title}</div>
         </div>
       </div>
+      {post.description && (
+        <p className="text-sm text-gray-700 mb-3 whitespace-pre-line">
+          {post.description}
+        </p>
+      )}
       <dl className="space-y-2 text-sm text-gray-700">
         <div className="flex gap-2">
           <dt className="w-28 text-gray-500">Posté par</dt>

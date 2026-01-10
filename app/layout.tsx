@@ -44,7 +44,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
 
   const links = [
     { href: "/", label: "Home", Icon: Home },
-    { href: "/news", label: "Publier", Icon: PenSquare },
+    { href: "/posts", label: "Publier", Icon: PenSquare },
     { href: "/archives", label: "Archives", Icon: Archive },
     { href: "/users", label: "Utilisateurs", Icon: Users },
   ];

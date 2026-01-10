@@ -3,6 +3,7 @@ export type PostType = "A_LA_UNE" | "RETARD" | "ABSENCE" | "REMPLACEMENT" | "EVE
 export type Post = {
   id: string;
   title: string;
+  description?: string;
   type: PostType;
 
   // Affichage sur une date (jour J) ou sur une période
