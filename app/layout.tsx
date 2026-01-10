@@ -33,6 +33,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
   const links = [
     { href: "/", label: "Home", icon: "home" },
     { href: "/posts", label: "Publier", icon: "pen" },
+    { href: "/archives", label: "Mes postes", icon: "archive" },
     { href: "/users", label: "Utilisateurs", icon: "users" },
   ] as const;
 
@@ -41,7 +42,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* HEADER */}
         <AuthGate>
-
+          
           <PostsProvider>
             <div className="min-h-screen w-full flex flex-col gap-4 py-1 px-1 lg:flex-row">
               <header className="hidden p-4 rounded-xl bg-white shadow-sm w-full lg:block md:w-64">

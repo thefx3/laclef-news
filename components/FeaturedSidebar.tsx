@@ -12,14 +12,14 @@ export function FeaturedSidebar({ posts, onSelect }: Props) {
   const sorted = sortByCreatedDesc(posts);
 
   return (
-    <nav className="p-4 py-6 rounded-xl bg-white shadow-sm w-full lg:w-64">
-      <div className="font-bold tracking-[0.25em] text-xl uppercase text-center mb-4">
+    <nav className="rounded-xl bg-white shadow-sm w-full lg:w-64">
+      <div className="font-bold rounded-t-xl tracking-[0.25em] text-xl text-white uppercase text-center py-5 mb-4 bg-black">
         A la une
       </div>
       {sorted.length === 0 ? (
         <p className="text-sm text-gray-500 text-center">Rien pour le moment</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-3 p-2 ">
           {sorted.map((post) => (
             <li
               key={post.id}

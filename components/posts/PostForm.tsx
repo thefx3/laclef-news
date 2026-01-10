@@ -6,12 +6,14 @@ import type { PostType } from "@/lib/types";
 import { fromDateInputValue, toDateInputValue } from "@/lib/calendarUtils";
 import { TYPE_OPTIONS } from "./types";
 import type { CreatePostInput } from "@/lib/postsRepo";
+import { useAuth } from "@/components/AuthGate";
 
 type Props = {
   onCreate: (input: CreatePostInput) => Promise<void> | void;
 };
 
 export function PostForm({ onCreate }: Props) {
+  const { session } = useAuth();
   const [content, setContent] = useState("");
   const [type, setType] = useState<PostType>("EVENT");
   const [isFeatured, setIsFeatured] = useState(false);
@@ -27,6 +29,8 @@ export function PostForm({ onCreate }: Props) {
     const startAt = fromDateInputValue(startDate);
     const endAt = endDate ? fromDateInputValue(endDate) : undefined;
     const finalType = isFeatured ? "A_LA_UNE" : type;
+    const email = session?.user?.email?.trim() || "";
+    const displayName = email.split("@")[0] || author.trim() || "Inconnu";
 
     try {
       setMessage(null);
@@ -35,8 +39,8 @@ export function PostForm({ onCreate }: Props) {
         type: finalType,
         startAt,
         endAt,
-        authorName: author.trim() || "Inconnu",
-        authorEmail: undefined,
+        authorName: displayName,
+        authorEmail: email || undefined,
       });
     } catch (err) {
       const message =

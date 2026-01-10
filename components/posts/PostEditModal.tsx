@@ -6,6 +6,7 @@ import type { Post, PostType } from "@/lib/types";
 import { TYPE_OPTIONS } from "./types";
 import { Modal } from "../calendar/Modal";
 import { fromDateInputValue, toDateInputValue } from "@/lib/calendarUtils";
+import { useAuth } from "@/components/AuthGate";
 
 type Props = {
   post: Post;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
+  const { session } = useAuth();
   const [content, setContent] = useState(post.title);
   const [type, setType] = useState<PostType>(
     post.type === "A_LA_UNE" ? "EVENT" : post.type
@@ -32,6 +34,10 @@ export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
     const startAt = fromDateInputValue(startDate);
     const endAt = endDate ? fromDateInputValue(endDate) : undefined;
     const finalType = isFeatured ? "A_LA_UNE" : type;
+    const email = session?.user?.email?.trim() || post.authorEmail;
+    const displayName = email
+      ? email.split("@")[0]
+      : post.authorName || "Inconnu";
 
     const updated: Post = {
       ...post,
@@ -40,7 +46,8 @@ export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
       type: finalType,
       startAt,
       endAt,
-      authorName: post.authorName,
+      authorName: post.authorName || displayName,
+      authorEmail: email,
       lastEditedAt: new Date(),
     };
 

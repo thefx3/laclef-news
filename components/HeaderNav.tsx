@@ -8,7 +8,7 @@ import { useAuth } from "./AuthGate";
 type LinkItem = {
   href: string;
   label: string;
-  icon: "home" | "pen" | "users";
+  icon: "home" | "pen" | "archive" | "users";
 };
 
 type Props = {
@@ -27,6 +27,7 @@ export function HeaderNav({ links, className, linkBaseClass }: Props) {
   const iconMap = {
     home: Home,
     pen: PenSquare,
+    archive: Archive,
     users: Users,
   };
 

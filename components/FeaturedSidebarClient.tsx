@@ -7,16 +7,24 @@ import { PostModal } from "@/components/calendar/PostModal";
 import { PostEditModal } from "@/components/posts/PostEditModal";
 import { useAuth } from "@/components/AuthGate";
 import type { Post } from "@/lib/types";
+import { startOfDay } from "@/lib/calendarUtils";
 
 export function FeaturedSidebarClient() {
   const { posts, loading, error, updatePost, deletePost } = usePostsContext();
   const { isGuest } = useAuth();
   const [selected, setSelected] = useState<Post | null>(null);
   const [editing, setEditing] = useState<Post | null>(null);
+  const today = startOfDay(new Date());
 
   const featured = useMemo(
-    () => posts.filter((post) => post.type === "A_LA_UNE"),
-    [posts]
+    () =>
+      posts.filter((post) => {
+        if (post.type !== "A_LA_UNE") return false;
+        const start = startOfDay(post.startAt);
+        const end = post.endAt ? startOfDay(post.endAt) : null;
+        return start <= today && (!end || end >= today);
+      }),
+    [posts, today]
   );
 
   return (
