@@ -164,7 +164,7 @@ export default function CalendarView({
     return `${buttonBase} ${
       active
         ? "bg-blue-100 text-blue-800 border-blue-200"
-        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:scale-95"
+        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:shadow-md cursor-pointer"
     }`;
   }
 

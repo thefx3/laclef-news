@@ -28,6 +28,10 @@ export function PostForm({ onCreate }: Props) {
 
     const startAt = fromDateInputValue(startDate);
     const endAt = endDate ? fromDateInputValue(endDate) : undefined;
+    if (endAt && endAt < startAt) {
+      setMessage("La date de fin doit être après la date de début.");
+      return;
+    }
     const finalType = isFeatured ? "A_LA_UNE" : type;
     const email = session?.user?.email?.trim() || "";
     const displayName = email.split("@")[0] || author.trim() || "Inconnu";

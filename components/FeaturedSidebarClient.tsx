@@ -21,8 +21,8 @@ export function FeaturedSidebarClient() {
       posts.filter((post) => {
         if (post.type !== "A_LA_UNE") return false;
         const start = startOfDay(post.startAt);
-        const end = post.endAt ? startOfDay(post.endAt) : null;
-        return start <= today && (!end || end >= today);
+        const end = startOfDay(post.endAt ?? post.startAt);
+        return start <= today && end >= today;
       }),
     [posts, today]
   );

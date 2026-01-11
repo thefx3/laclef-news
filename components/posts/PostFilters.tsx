@@ -12,7 +12,7 @@ type Props = {
 
 export function PostFilters({ filterMode, filterDate, onChangeMode, onChangeDate }: Props) {
   const base =
-    "px-3 py-2 rounded-lg border text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+    "px-3 py-2 rounded-lg border text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 hover:shadow-md cursor-pointer";
 
   const button = (label: string, mode: FilterMode) => {
     const isActive = filterMode === mode;

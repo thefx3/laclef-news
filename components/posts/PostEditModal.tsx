@@ -26,6 +26,7 @@ export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
   const [endDate, setEndDate] = useState(() =>
     post.endAt ? toDateInputValue(post.endAt) : ""
   );
+  const [message, setMessage] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,6 +34,10 @@ export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
 
     const startAt = fromDateInputValue(startDate);
     const endAt = endDate ? fromDateInputValue(endDate) : undefined;
+    if (endAt && endAt < startAt) {
+      setMessage("La date de fin doit être après la date de début.");
+      return;
+    }
     const finalType = isFeatured ? "A_LA_UNE" : type;
     const email = session?.user?.email?.trim() || post.authorEmail;
     const displayName = email
@@ -57,6 +62,11 @@ export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
   return (
     <Modal onClose={onCancel}>
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+        {message && (
+          <div className="md:col-span-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {message}
+          </div>
+        )}
         <div className="md:col-span-2 flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-800" htmlFor="edit-content">
             Contenu
@@ -79,7 +89,6 @@ export function PostEditModal({ post, onSave, onDelete, onCancel }: Props) {
             value={type}
             onChange={(e) => setType(e.target.value as PostType)}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
-            disabled={isFeatured}
           >
             {TYPE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
